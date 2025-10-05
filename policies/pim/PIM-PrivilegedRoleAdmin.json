@@ -1,0 +1,20 @@
+{
+  "role": "Privileged Role Administrator",
+  "assignmentType": "Eligible",
+  "requireApproval": true,
+  "approvers": [
+    "secops.lead@phil.ca"
+  ],
+  "mfaOnActivation": true,
+  "justificationRequired": true,
+  "ticketRequired": true,
+  "activationMaximumDuration": "PT60M",
+  "notification": {
+    "onActivation": [
+      "secops@phil.ca"
+    ],
+    "onAssignment": [
+      "iam@phil.ca"
+    ]
+  }
+}

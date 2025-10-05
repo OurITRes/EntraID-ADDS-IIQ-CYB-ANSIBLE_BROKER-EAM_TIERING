@@ -1,0 +1,11 @@
+{
+  "displayName": "AU-TST-T2",
+  "description": "Test - Tier2 administrative unit (end users)",
+  "scopedResources": [
+    "Users:T2",
+    "Groups:T2"
+  ],
+  "delegatedHelpdesk": [
+    "tst.helpdesk@phil.ca"
+  ]
+}
