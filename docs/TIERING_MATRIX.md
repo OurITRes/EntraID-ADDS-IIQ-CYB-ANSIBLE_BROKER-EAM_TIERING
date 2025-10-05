@@ -16,82 +16,83 @@ Ce document classe chaque composant, outil, agent et rôle de la solution **Entr
 
 ---
 
-## 2️⃣ Tableau de classification des composants
+## 2️⃣ Tableau de classification des composants (au sein d’AD/EAM)
 
 | Composant / Outil | Tier | Rôle / Fonction | Justification |
 |--------------------|------|------------------|----------------|
-| **Active Directory Domain Services (DCs)** | T0 | Contrôleur d’identité racine | Composant critique d’authentification |
-| **PKI / HSM** | T0 | Services de certificats | Racine de confiance |
-| **CyberArk Vault / CPM / PSM** | T0 | Gestion des secrets et sessions privilégiées | Accès au stockage des comptes sensibles |
-| **CyberArk PVWA (API/Web)** | T0 | Interface du plan de contrôle du Vault | Administre directement les accès/requests/rotations |
-| **Entra Connect / AAD Sync** | T0 | Synchronisation identité hybride | Flux identité sécurisé DC ↔ Entra |
-| **Entra ID (tenant root)** | T0 | Autorité cloud | Gestion globale identité et PIM |
-| **Quest RMAD / GPOAdmin / Change Auditor / Security Guardian** | T0 | Outils d’administration AD / GPO | Nécessitent accès admin délégué |
-| **SailPoint IIQ (IdentityIQ)** | T1 | Gouvernance et provisioning | Gère les identités et rôles sans accès direct T0 |
-| **Orchestrateur Ansible / GitHub Actions** | T1 | Workflow automatisé IIQ / CyberArk | Intermédiaire entre T1 et T0 |
-| **Splunk / Datadog / SIEM** | T1 | Collecte et corrélation de logs | Accès lecture seule centralisé |
-| **PingCastle** | T1 | Audit et hygiène ADDS | Collecte de configuration DC |
-| **Defender for Identity / MDI / MDA / MDC** | T1 | Protection et détection AD | Sensor de sécurité à privilèges intermédiaires |
-| **CrowdStrike Falcon** | T2 | EDR des postes utilisateurs | Couche endpoint non privilégiée |
+| **Active Directory Domain Services (DCs)** | **T0** | Contrôleur d’identité racine | Élément critique d’authentification |
+| **ADFS / Entra Federation Services** | **T0** | Authentification fédérée | Point d’entrée critique |
 | **PAW T0 / T1 / T2** | Tiers respectif | Poste de travail sécurisé dédié | Séparation physique et logique |
-| **Postes clients standard (Intune)** | T2 | Utilisateurs métiers | Environnement productif |
-| **CyberArk PSM Jump Servers** | T0 | Saut sécurisé | Accès isolé entre T1 et T0 |
-| **ADFS / Entra Federation Services** | T0 | Authentification fédérée | Point d’entrée critique |
-| **SIEM connectors (Syslog, API, REST)** | T1 | Intégration SOC | Accès en lecture contrôlé |
-| **IIQ Connectors (SCIM, LDAP, JDBC)** | T1 | Connectivité applicative | Restreinte via comptes de service CyberArk |
-| **Azure Bastion / JumpHost PRD** | T1 | Accès administrateurs cloud | Proxy d’accès contrôlé |
-| **Ansible Control Node (Runner)** | T1 | Exécution orchestrée non-T0 | Automatisation avec isolation |
-| **CyberArk Safe Accounts** | T0 | Coffres de stockage secrets | Contiennent identifiants DC / services |
-| **Intune / Endpoint Manager** | T2 | Gestion périphériques | Gestion utilisateurs / device |
-| **Exchange Online / M365** | T2 | Messagerie et collaboration | Services utilisateurs standards |
+| **CyberArk Safe Accounts T0 / T1 / T2** | Tiers respectif | Coffres de stockage secrets dédiés| Contiennent identifiants DC / services |
+| **PKI / HSM** | **T0** | Services de certificats | Racine de confiance AD |
+| **CyberArk PVWA (API/Web)** | **T0** | Interface du plan de contrôle privilégié | Administre demandes, sessions et rotations |
+| **CyberArk CPM / PSM / PSM Jump** | **T0** | Rotation & sessions privilégiées | Agissent directement sur comptes sensibles |
+| **Quest RMAD / GPOAdmin / Change Auditor / Security Guardian** | **T0** | Outils d’admin & restauration AD/GPO | Interviennent sur DC, GPO, schéma, ACL |
+| **Entra Connect (AAD Sync)** | **T0** | Synchronisation identité hybride | Flux identité sécurisé DC ↔ Entra |
+| **Entra ID (tenant root)** | **T0** | Autorité cloud | Gouvernance globale, PIM |
+| **SailPoint IIQ (IdentityIQ)** | **T1** | Gouvernance & provisioning | Orchestrateur sans accès direct T0 |
+| **IIQ Connectors (SCIM, LDAP, JDBC)** | **T1** | Connectivité applicative | Restreinte via comptes de service CyberArk |
+| **Ansible / GitHub Actions (Broker)** | **T1** | Orchestration non‑T0 | Relais contrôlé vers PVWA T0 |
+| **Ansible / GitHub Actions (Broker)** | **T1** | Orchestration non‑T0 | Relais contrôlé vers PVWA T0 |
+| **SIEM connectors (Syslog, API, REST)** | **T1** | Intégration SOC | Accès en lecture contrôlé |
+| **SIEM (Splunk / Datadog)** | **T1** | Collecte centralisée (lecture)** | Lecture seule multi‑sources |
+| **Defender for Identity / MDI** | **T1** | Détection identité AD | Sensor privilèges intermédiaires |
+| **PingCastle** | **T1** | Hygiène & audit ADDS | Collecte de configuration DC |
+| **Azure Bastion** | **T1** | Proxy d’accès administrateurs cloud | Accès contrôlé |
+| **Postes utilisateurs (Intune/M365)** | **T2** | Environnement utilisateur | Productivité |
+| **EDR (Falcon)** | **T2** | Protection endpoint | Non privilégié |
+| **Apps SaaS / Groupes dynamiques Entra** | **T2** | Services utilisateurs | Accès standard (MFA/CA) |
+| **Intune / Endpoint Manager** | **T2** | Gestion périphériques | Gestion utilisateurs / device |
+| **Exchange Online / M365** | **T2** | Messagerie et collaboration | Services utilisateurs standards |
+
+> **Note** : *Lecture seule* du SIEM signifie **pas d’altération** des sources T0/T1, uniquement ingestion.
 
 ---
 
-## 3️⃣ Carte ASCII simplifiée du modèle de flux EAM
+## 3️⃣ Enclave hors EAM – CyberArk Digital Vault
+
+| Composant | Tier | Rôle / Fonction | Justification |
+|-----------|------|------------------|---------------|
+| **CyberArk Digital Vault (Primary)** | 🚫 **Hors EAM** | Racine des secrets (plan de contrôle indépendant) | Non joint au domaine, flux restreints (1858/1859) |
+| **CyberArk DR Vault (Replica)** | 🚫 **Hors EAM** | Reprise chiffrée unidirectionnelle | Isolation identique à la Vault primaire |
+
+Les composants **PVWA/CPM/PSM (T0)** interagissent avec la Vault via des **flux chiffrés** et **liste blanche d’origines** ; la Vault n’est **jamais** jointe au domaine.
+
+---
+
+## 4️⃣ Carte ASCII simplifiée du modèle
 
 ```
-          +-------------------+
-          |     Tier 0        |
-          |-------------------|
-          | ADDS (DCs)        |
-          | CyberArk Vault     |
-          | PKI / HSM / Quest  |
-          | AAD Connect        |
-          +--------^-----------+
-                   |
-                   v
-          +-------------------+
-          |     Tier 1        |
-          |-------------------|
-          | IIQ (IdentityIQ)  |
-          | PSM (sessions)    |
-          | Ansible / GitHub  |
-          | SIEM / SOC        |
-          +--------^-----------+
-                   |
-                   v
-          +-------------------+
-          |     Tier 2        |
-          |-------------------|
-          | Intune / M365     |
-          | Postes utilisateurs|
-          | Apps SaaS / EDR   |
-          +-------------------+
-```
+  +-----------------------------+       +------------------------------+
+  |     Hors EAM – Vault        |       |          Tier 0              |
+  |-----------------------------|       |------------------------------|
+  | Digital Vault (Primary)     |<----->| PVWA / CPM / PSM / DCs / PKI |
+  | DR Vault (replication)      |       | Quest RMAD / GPOAdmin / etc. |
+  +-----------------------------+       +------------------------------+
+                                              ^
+                                              |  (broker contrôlé)
+                                        +-----+-----+
+                                        |   Tier 1  |
+                                        | IIQ / Ansible / SIEM |
+                                        +-----+-----+
+                                              |
+                                              v
+                                        +-----------+
+                                        |  Tier 2   |
+                                        |  Users    |
+                                        +-----------+
 
 ---
 
 ## 4️⃣ Bonnes pratiques de franchissement de tiers
 
 | Principe | Description |
-|-----------|--------------|
-| **PAW dédiés** | Chaque tier doit disposer de ses propres PAW (Postes d’Administration Windows) |
-| **Flux unidirectionnels** | Aucune session descendante (T2 → T1 / T1 → T0) non médiée |
-| **Orchestration “non-T0”** | Tous les appels automatisés passent par un orchestrateur intermédiaire |
-| **Isolation réseau** | VLAN, pare-feux et ACLs séparés par tier |
-| **Contrôles CyberArk** | Utiliser PVWA comme seule interface d’appel vers le Vault |
-| **JEA / JIT** | Just Enough Administration + Just-In-Time pour tout accès |
-| **Monitoring croisé** | SIEM corrèle les logs des trois tiers pour détection d’anomalies |
+|-----------|-------------|
+| **PAW dédiés** | PAW‑T0 / PAW‑T1 / PAW‑T2 distincts |
+| **Broker T1→T0** | Orchestration via Ansible/GitHub (jamais d’appel direct T1→Vault) |
+| **Isolation réseau** | VLAN/ACL/pare‑feu séparés par tier + enclave Vault dédiée |
+| **JEA/JIT** | Just Enough + Just‑In‑Time pour tout accès privilégié |
+| **SIEM lecture seule** | Corrélation T0/T1/T2 sans écriture sur sources |
 
 ---
 
