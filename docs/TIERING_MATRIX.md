@@ -26,9 +26,9 @@ Ce document classe chaque composant, outil, agent et rôle de la solution **Entr
 | **CyberArk PVWA (API/Web)** | T0 | Interface du plan de contrôle du Vault | Administre directement les accès/requests/rotations |
 | **Entra Connect / AAD Sync** | T0 | Synchronisation identité hybride | Flux identité sécurisé DC ↔ Entra |
 | **Entra ID (tenant root)** | T0 | Autorité cloud | Gestion globale identité et PIM |
+| **Quest RMAD / GPOAdmin / Change Auditor / Security Guardian** | T0 | Outils d’administration AD / GPO | Nécessitent accès admin délégué |
 | **SailPoint IIQ (IdentityIQ)** | T1 | Gouvernance et provisioning | Gère les identités et rôles sans accès direct T0 |
 | **Orchestrateur Ansible / GitHub Actions** | T1 | Workflow automatisé IIQ / CyberArk | Intermédiaire entre T1 et T0 |
-| **Quest RMAD / GPOAdmin / Change Auditor / Security Guardian** | T1 | Outils d’administration AD / GPO | Nécessitent accès admin délégué |
 | **Splunk / Datadog / SIEM** | T1 | Collecte et corrélation de logs | Accès lecture seule centralisé |
 | **PingCastle** | T1 | Audit et hygiène ADDS | Collecte de configuration DC |
 | **Defender for Identity / MDI / MDA / MDC** | T1 | Protection et détection AD | Sensor de sécurité à privilèges intermédiaires |
@@ -55,7 +55,7 @@ Ce document classe chaque composant, outil, agent et rôle de la solution **Entr
           |-------------------|
           | ADDS (DCs)        |
           | CyberArk Vault     |
-          | PKI / HSM          |
+          | PKI / HSM / Quest  |
           | AAD Connect        |
           +--------^-----------+
                    |
@@ -66,7 +66,7 @@ Ce document classe chaque composant, outil, agent et rôle de la solution **Entr
           | IIQ (IdentityIQ)  |
           | PSM (sessions)    |
           | Ansible / GitHub  |
-          | SIEM / Quest / SOC|
+          | SIEM / SOC        |
           +--------^-----------+
                    |
                    v
