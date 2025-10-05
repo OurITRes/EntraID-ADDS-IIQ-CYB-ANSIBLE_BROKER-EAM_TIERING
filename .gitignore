@@ -1,0 +1,4 @@
+# Ignore rendered images locally (CI will build them)
+diagrams/*.png
+diagrams/*.svg
+diagrams/*.pdf

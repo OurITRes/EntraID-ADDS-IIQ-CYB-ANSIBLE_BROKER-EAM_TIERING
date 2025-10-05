@@ -1,0 +1,48 @@
+@startuml
+title T2 Standard — Provisioning IIQ -> Orchestrateur -> AD DS (OU déléguées) -> Entra ID (licence)
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+
+box "Tier-2 (Business)" #EEEEEE
+  actor "HR System" as HR
+end box
+
+box "Tier-1 (IAM & Orchestration)" #D6EAF8
+  participant "SailPoint IIQ\n(Source of Truth)" as IIQ
+  participant "Orchestrateur CI/CD\n(GitHub Actions + Ansible)" as ORCH
+end box
+
+box "Tier-0 (Identity Core)" #FDEDEC
+  database "CyberArk PVWA\n(JIT cred délégués OU)" as PVWA
+  participant "AD DS PRD\n(OU=T2, droits délégués)" as ADPRD
+  participant "AD DS DEV/TST\n(OU=T2, droits délégués)" as ADNPRD
+  participant "Entra Connect / Cloud Sync\n(scoping strict, 1 forêt autoritaire)" as CONNECT
+  participant "Entra ID (Tenant)\nObjets licenciés = T2 uniquement" as AAD
+end box
+
+== Création identité ==
+HR -> IIQ: Création / MàJ profil (HR feed)
+IIQ -> IIQ: Politique de provisioning (PRD obligatoire, DEV/TST selon rôle/BU)
+
+== Déclenchement orchestrateur ==
+IIQ -> ORCH: Webhook "Provision T2" (payload identité & rôles)
+
+== Secrets opérationnels ==
+ORCH -> PVWA: Demande JIT credential (compte délégué OU)
+PVWA --> ORCH: JIT token / session (time-bound, tracée)
+
+== Comptes AD T2 ==
+ORCH -> ADPRD: New-ADUser T2 + attributs + groupes AGDLP de base
+ORCH -> ADNPRD: (option) New-ADUser T2 DEV/TST + groupes env
+ORCH -> PVWA: Check-in + rotation post-op
+
+== Sync vers Entra ==
+ADPRD -> CONNECT: Delta export (forêt source unique)
+CONNECT -> AAD: Provision / Update (mS-DS-ConsistencyGuid -> ImmutableID)
+IIQ -> AAD: SCIM/Graph — extensionAttributes, métadonnées
+AAD -> AAD: Attribution **licence** (unique) au compte T2 (standard user)
+
+== Résultat ==
+ORCH -> IIQ: IDs objets + journaux + statut
+@enduml

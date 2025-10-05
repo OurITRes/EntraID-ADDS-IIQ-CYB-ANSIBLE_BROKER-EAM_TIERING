@@ -1,0 +1,35 @@
+@startuml
+title JEA — Mécanique d'un endpoint (définition, enregistrement, invocation, contrôle)
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+
+participant "Security Team\n(JEA Author)" as SEC
+participant "MGMT Host\n(T0 ou T1)" as MGMT
+participant "PowerShell\nRole Capability (.psrc)" as RC
+participant "PowerShell\nSession Config (.pssc)" as SC
+actor "Opérateur (via PSM)" as OP
+
+== Définition ==
+SEC -> RC: Définir cmdlets autorisées (modules, verbs/nouns, params)
+SEC -> SC: Associer RC à des groupes AD (map: groupe -> rôle)
+
+== Enregistrement ==
+SEC -> MGMT: Publish module (RoleCapabilities/<name>.psrc)
+SEC -> MGMT: Register-PSSessionConfiguration -Name JEA-AD-Tx -Path <SC>
+MGMT -> MGMT: ACL sur endpoint (seuls groupes autorisés)
+
+== Invocation (via PSM) ==
+OP -> MGMT: Enter-PSSession -ConfigurationName JEA-AD-Tx
+MGMT -> MGMT: Crée session *constrainée* (runspace limité)
+note right of MGMT
+  - Seules les cmdlets whitelistées sont disponibles
+  - Pas d'accès fichier/registry hors périmètre
+  - Transcripts & logs signés
+end note
+
+== Exécution & Audit ==
+OP -> MGMT: Exécute cmdlets (ex: Get-ADUser, Set-ADAccountControl)
+MGMT -> MGMT: Journalise transcript / ETW / Sysmon
+MGMT --> SEC: Export des logs vers SIEM
+@enduml

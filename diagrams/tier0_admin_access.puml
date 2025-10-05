@@ -1,0 +1,57 @@
+@startuml
+title T0 Admin — Demande d'accès JIT maximal (IIQ -> Orchestrateur -> PVWA/PSM -> JEA T0 -> AD T0)
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+
+box "Tier-1 (IAM & Orchestration)" #D6EAF8
+  participant "SailPoint IIQ\n(Workflow renforcé)" as IIQ
+  participant "Orchestrateur CI/CD\n(GitHub Actions + Ansible)" as ORCH
+end box
+
+box "Tier-0 (Bastion d'identité & DC)" #FDEDEC
+  database "CyberArk PVWA\n(approvals multiples, vault)" as PVWA
+  participant "CyberArk PSM/PSMP\n(session broker T0)" as PSM
+  participant "Host de gestion T0\n(Endpoint JEA-T0 hautement restreint)" as MGMT_T0
+  participant "AD DS (T0 scope)\nOU=Tier0\\AdminAccounts" as AD_T0
+end box
+
+box "Poste & Contrôles" #E8DAEF
+  actor "Approver Sécurité (2e pair)" as APPROVER2
+  actor "Approver Sécu/IT" as APPROVER1
+  actor "Admin humain (identité T2) sur PAW T0" as HUMAN_T0
+end box
+
+== Demande via IIQ ==
+HUMAN_T0 -> IIQ: Demande accès T0 (raison, ticket, change ID)
+IIQ -> IIQ: Workflow renforcé (au moins 2 approbations)
+IIQ -> ORCH: Webhook "Grant T0 JIT" (payload signé)
+
+== Préparation & garde-fous ==
+ORCH -> AD_T0: S'assure existence "a-<user0>" (aucune appartenance)
+ORCH -> PVWA: Policy T0 (double approbation, session recording, time <= 60min)
+ORCH -> PVWA: Onboard "a-<user0>" (no standing secret en clair)
+note right of PVWA
+  AuthN à PVWA via identité T2 (SSO) sur PAW T0,
+  pas de licence sur le compte admin.
+end note
+
+== Activation ==
+HUMAN_T0 -> PVWA: Login SSO (identité T2, PAW T0 requis)
+PVWA -> APPROVER1: Approval #1 (MFA)
+PVWA -> APPROVER2: Approval #2 (MFA)
+APPROVER1 --> PVWA: Approve
+APPROVER2 --> PVWA: Approve
+
+== Exécution JEA T0 ==
+HUMAN_T0 -> PSM: Start session vers MGMT_T0 (ticket PVWA)
+PSM -> MGMT_T0: JEA endpoint "JEA-AD-T0" (cmdlets minimales)
+HUMAN_T0 -> MGMT_T0: Commandes strictement whitelistées
+MGMT_T0 -> AD_T0: Applique changements
+
+== Extinction stricte ==
+... fin de fenêtre ...
+PVWA -> AD_T0: Retire appartenance JIT (si utilisée)
+PSM -> PVWA: Termine + check-in + rotation
+ORCH -> IIQ: Journal complet + artefacts (transcripts/hash)
+@enduml

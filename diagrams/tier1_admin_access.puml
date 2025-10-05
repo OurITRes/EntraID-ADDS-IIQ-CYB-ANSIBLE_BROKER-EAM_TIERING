@@ -1,0 +1,57 @@
+@startuml
+title T1 Admin — Demande d'accès JIT (IIQ -> Orchestrateur -> CyberArk PSM -> JEA T1 -> AD T1)
+
+skinparam ParticipantPadding 20
+skinparam BoxPadding 10
+
+box "Tier-1 (IAM & Orchestration)" #D6EAF8
+  participant "SailPoint IIQ\n(Workflow & approvals)" as IIQ
+  participant "Orchestrateur CI/CD\n(GitHub Actions + Ansible)" as ORCH
+end box
+
+box "Tier-0 (Contrôles privilégiés / AD Core)" #FDEDEC
+  database "CyberArk PVWA\n(Approvals, vault, JIT)" as PVWA
+  participant "CyberArk PSM/PSMP\n(Session broker)" as PSM
+  participant "Host de gestion T1\n(Endpoint JEA-T1 + RSAT)" as MGMT_T1
+  participant "AD DS (T1 scope)\nGroupes T1 non permanents" as AD_T1
+end box
+
+box "Poste & Identité opérateur" #E8DAEF
+  actor "SecOps Approver" as APPROVER
+  actor "Admin humain (identité T2)\nconnecté sur PAW T1" as HUMAN
+end box
+
+== Demande via IIQ ==
+HUMAN -> IIQ: Demande d'accès T1 (raison, durée, périmètre)
+IIQ -> IIQ: Workflow d'approbation (Sécu + Mgr)
+IIQ -> ORCH: Webhook "Grant T1 JIT" (payload décision)
+
+== Préparation côté CyberArk ==
+ORCH -> PVWA: Créer/MAJ policy JIT (groupe cible T1, durée, enregistrement)
+ORCH -> AD_T1: S'assure que le compte admin "a-<user>" existe (sans appartenance)
+ORCH -> PVWA: Onboard "a-<user>" (sans secret divulgué)
+
+== Activation côté opérateur ==
+HUMAN -> PVWA: Login SSO (via identité T2 licenciée)
+PVWA -> APPROVER: Demande d'approbation finale (MFA)
+APPROVER -> PVWA: Approve (durée limitée)
+
+== Session proxifiée + JEA ==
+HUMAN -> PSM: Démarre session vers MGMT_T1 (ticket PVWA)
+PSM -> MGMT_T1: Ouvre JEA endpoint "JEA-AD-T1" (cmdlets whitelistes)
+note right
+  Le compte admin "a-<user>" reste sans appartenance permanente.
+  Le JIT applique soit:
+   - une appartenance temporaire au(x) groupe(s) T1,
+   - soit un jeu de commandes JEA suffisant
+  le tout tracé & borné dans le temps.
+end note
+
+== Exécution & extinction ==
+HUMAN -> MGMT_T1: Exécute tâches (cmdlets autorisées JEA)
+MGMT_T1 -> AD_T1: Changements appliqués
+... temps écoulé ...
+PVWA -> AD_T1: Retire appartenance JIT (si utilisée)
+PSM -> PVWA: Termine session / check-in / rotation
+ORCH -> IIQ: Journal (sessionId, horodatage, résultat)
+@enduml
