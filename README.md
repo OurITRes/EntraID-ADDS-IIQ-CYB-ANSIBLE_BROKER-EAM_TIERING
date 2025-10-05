@@ -1,9 +1,26 @@
 # Entra ID × SailPoint IIQ × AD DS (Multi-forêts) — Tiering EAM (T2/T1/T0)
 
 Ce dépôt fournit **3 diagrammes de séquence PlantUML** + **1 diagramme JEA** et toute la **documentation** pour opérer un modèle où :
-- **IIQ** (Tier‑1) orchestre le **provisioning T2** (users licenciés Entra ID), et **les accès JIT** pour **T1** et **T0** via **CyberArk (PVWA/PSM)** + **JEA** ;
+- **IIQ** (Tier 1) orchestre le **provisioning T2** (users licenciés Entra ID), et **les accès JIT** pour **T1** et **T0** via **CyberArk (PVWA/PSM)** + **JEA** ;
 - Les **comptes admin** n’ont **aucun standing access** ni licence ;
 - **PAW T1/T0**, **PIM/CA**, **JEA**, **délégations OU**, **scoping Entra Connect** assurent la séparation **EAM (T2/T1/T0)**.
+
+#  Nouveautés de la v0.1.5-beta (par rapport à v0.1.4-beta)
+
+## Version 0.1.5-beta
+
+- PIM (exports JSON) → policies/pim/
+  - PIM-PrivilegedRoleAdmin.json (eligible-only, approbation, MFA, justification, ticket, 60 min)
+  - PIM-GroupsAdmin.json (eligible-only, approbation IAM, 120 min)
+- Administrative Units (exemples JSON) → entra/administrative-units/
+  - AU-PRD-T0.json, AU-DEV-T1.json, AU-TST-T2.json (ressources scope + délégations)
+- Playbook T0 (PSM headless “demo”) → playbooks/t0_admin/psm_headless_demo.yml
+  - Simule l’ouverture d’une session PSM via API, une commande JEA côté bastion, et la clôture/rotation.
+- Diagramme C4 haut niveau (PlantUML) → diagrams/c4_highlevel.puml
+  - Vue “container” des acteurs (Business, Operator), IIQ/Orchestrateur (T1), Entra/AD/CyberArk (T0), avec relations clés.
+- Guide de migration → docs/MIGRATION.md
+  - Chemin balisé : T2 d’abord, bastions & JEA, CyberArk & JIT, PIM/CA, bascule admin, décommission et recerts.
+
 #  Nouveautés de la v0.1.4-beta (par rapport à v0.1.3-beta)
 
 ## Version 0.1.4-beta

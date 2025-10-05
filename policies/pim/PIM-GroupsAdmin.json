@@ -1,0 +1,17 @@
+{
+  "role": "Groups Administrator",
+  "assignmentType": "Eligible",
+  "requireApproval": true,
+  "approvers": [
+    "iam.manager@phil.ca"
+  ],
+  "mfaOnActivation": true,
+  "justificationRequired": true,
+  "ticketRequired": false,
+  "activationMaximumDuration": "PT120M",
+  "notification": {
+    "onActivation": [
+      "iam@phil.ca"
+    ]
+  }
+}

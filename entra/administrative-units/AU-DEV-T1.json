@@ -1,0 +1,12 @@
+{
+  "displayName": "AU-DEV-T1",
+  "description": "Dev - Tier1 administrative unit (servers & apps)",
+  "scopedResources": [
+    "Users:T1",
+    "Groups:T1",
+    "Devices:PAW-T1"
+  ],
+  "delegatedAdmins": [
+    "dev.ops@phil.ca"
+  ]
+}

@@ -1,0 +1,31 @@
+
+---
+- name: T0 Admin | PSM headless demo (simulé) via API placeholders
+  hosts: pvwa
+  gather_facts: no
+  vars:
+    pvwa_base_url: "{{ lookup('env','PVWA_BASE_URL') | default('https://pvwa.phil.ca', true) }}"
+    target_host: "mgmt-t0.phil.ca"
+    admin_sam: "a-{{ lookup('env','USER_ID') | default('jdoe0', true) }}"
+    duration_minutes: 60
+  tasks:
+    - name: (1) Ouvrir une session PSM (placeholder)
+      uri:
+        url: "{{ pvwa_base_url }}/PasswordVault/WebServices/PIMServices.svc/PSMConnect"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ lookup('env','PVWA_TOKEN') }}"
+        body_format: json
+        body:
+          target: "{{ target_host }}"
+          account: "{{ admin_sam }}"
+          record: true
+        validate_certs: yes
+      register: psm
+    - name: (2) Exécuter une commande JEA côté bastion (simulée)
+      debug:
+        msg: "JEA command invoked for {{ admin_sam }} on {{ target_host }} (simulation)."
+    - name: (3) Clôturer/rotation
+      debug:
+        msg: "Session closed and secrets rotated (simulation)."

@@ -1,0 +1,12 @@
+{
+  "displayName": "AU-PRD-T0",
+  "description": "Prod - Tier0 administrative unit (identity core)",
+  "scopedResources": [
+    "Users:T0",
+    "Groups:T0",
+    "Devices:PAW-T0"
+  ],
+  "delegatedAdmins": [
+    "t0.admins@phil.ca"
+  ]
+}
