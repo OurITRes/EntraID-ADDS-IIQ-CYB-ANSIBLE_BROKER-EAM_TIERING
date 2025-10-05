@@ -1,0 +1,14 @@
+{
+  "name": "GRP-DYN-ADM-ANY",
+  "properties": {
+    "displayName": "GRP-DYN-ADM-ANY",
+    "description": "Dynamic group: accounts flagged as Admin (extensionAttribute12=Admin)",
+    "membershipRule": "(user.extensionAttribute12 -eq \"Admin\")",
+    "membershipRuleProcessingState": "On",
+    "securityEnabled": true,
+    "mailEnabled": false,
+    "groupTypes": [
+      "DynamicMembership"
+    ]
+  }
+}

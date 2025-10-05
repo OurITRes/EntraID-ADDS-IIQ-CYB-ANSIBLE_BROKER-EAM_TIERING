@@ -1,0 +1,41 @@
+{
+  "displayName": "CA-PIM-Activation-PAW-Only",
+  "state": "enabled",
+  "conditions": {
+    "users": {
+      "includeGroups": [
+        "GRP-DYN-ADM-ANY"
+      ]
+    },
+    "clientAppTypes": [
+      "browser",
+      "mobileAppsAndDesktopClients"
+    ],
+    "signInRiskLevels": [
+      "low",
+      "none"
+    ],
+    "devicePlatforms": {
+      "includePlatforms": [
+        "all"
+      ]
+    },
+    "devices": {
+      "deviceStates": {
+        "includeStates": [
+          "compliant"
+        ]
+      }
+    }
+  },
+  "grantControls": {
+    "operator": "AND",
+    "builtInControls": [
+      "mfa",
+      "compliantDevice"
+    ]
+  },
+  "sessionControls": {
+    "applicationEnforcedRestrictions": true
+  }
+}

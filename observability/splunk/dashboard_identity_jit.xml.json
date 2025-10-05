@@ -1,0 +1,7 @@
+{
+  "dashboard": {
+    "label": "Identity JIT \u2014 Trace end-to-end (IIQ \u2194 PVWA \u2194 AD \u2194 Entra)",
+    "description": "Correlates IIQ requests, PVWA sessions, AD changes, and Entra updates.",
+    "definition": "<dashboard>\n  <label>Identity JIT \u2014 Trace end-to-end</label>\n  <row>\n    <panel>\n      <title>IIQ Requests (last 24h)</title>\n      <table>\n        <search>\n          <query>index=iiq sourcetype=iiq:workflow action=request earliest=-24h\n          | stats count by user, request_type, status</query>\n        </search>\n      </table>\n    </panel>\n    <panel>\n      <title>PVWA Sessions (last 24h)</title>\n      <table>\n        <search>\n          <query>index=pvwa sourcetype=pvwa:psm action=session_start earliest=-24h\n          | stats count by admin_sam, tier, approval_count</query>\n        </search>\n      </table>\n    </panel>\n  </row>\n  <row>\n    <panel>\n      <title>AD Changes via JEA</title>\n      <table>\n        <search>\n          <query>index=windows sourcetype=wineventlog:security (EventCode=4738 OR EventCode=4728 OR EventCode=4729)\n          | stats count by TargetUserName, EventCode</query>\n        </search>\n      </table>\n    </panel>\n    <panel>\n      <title>Entra ID Updates (Graph)</title>\n      <table>\n        <search>\n          <query>index=graph sourcetype=graph:audit verb=PATCH resource=users\n          | stats count by user, extensionAttribute10, extensionAttribute11, extensionAttribute12</query>\n        </search>\n      </table>\n    </panel>\n  </row>\n</dashboard>"
+  }
+}

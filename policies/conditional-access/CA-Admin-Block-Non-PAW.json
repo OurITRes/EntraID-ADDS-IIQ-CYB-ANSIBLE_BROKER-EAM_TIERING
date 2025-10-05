@@ -1,0 +1,20 @@
+{
+  "displayName": "CA-Admin-Block-Non-PAW",
+  "state": "enabled",
+  "conditions": {
+    "users": {
+      "includeGroups": [
+        "GRP-DYN-ADM-ANY"
+      ]
+    },
+    "clientAppTypes": [
+      "all"
+    ]
+  },
+  "grantControls": {
+    "operator": "OR",
+    "builtInControls": [
+      "block"
+    ]
+  }
+}
