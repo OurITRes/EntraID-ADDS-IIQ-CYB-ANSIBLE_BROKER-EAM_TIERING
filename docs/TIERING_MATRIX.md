@@ -132,23 +132,26 @@ skinparam ArrowColor #616161
 skinparam Shadowing false
 skinparam defaultFontName DejaVu Sans
 
+package "Hors EAM – CyberArk Vault" #FFF3E0 {
+  rectangle "Digital Vault (Primary)" as VAULT
+  rectangle "DR Vault (Replication)" as VAULT_DR
+  VAULT -down-> VAULT_DR : One-way encrypted
+}
+
 package "Tier 0 – Contrôle racine" #F3E5F5 {
   rectangle "ADDS (Domain Controllers)" as T0_ADDS
   rectangle "PKI / HSM" as T0_PKI
-  rectangle "CyberArk Vault / CPM / PSM" as T0_CYB
-  rectangle "PSM Jump Servers" as T0_PSMJ
+  rectangle "CyberArk PVWA (API/Web)" as T0_PVWA
+  rectangle "CyberArk CPM / PSM / PSM Jump" as T0_CYB
   rectangle "Entra Connect (AAD Sync)" as T0_SYNC
   rectangle "Entra ID (root)" as T0_ENTRA
-  rectangle "CyberArk Safes (secrets)" as T0_SAFES
-  rectangle "ADFS / Entra Federation" as T0_FED
+  rectangle "Quest RMAD / GPOAdmin / Change Auditor / Security Guardian" as T0_QUEST
 }
 
 package "Tier 1 – Administration & Sécurité" #E3F2FD {
   rectangle "SailPoint IIQ (IdentityIQ)" as T1_IIQ
-  rectangle "CyberArk PVWA API" as T1_PVWA
-  rectangle "Ansible / GitHub Actions" as T1_ORCH
-  rectangle "Quest / Change Auditor / GPOAdmin" as T1_QUEST
-  rectangle "SIEM / SOC (Splunk / Datadog)" as T1_SIEM
+  rectangle "Ansible / GitHub Actions (Broker)" as T1_ORCH
+  rectangle "SIEM (Splunk / Datadog) [RO]" as T1_SIEM
   rectangle "Defender for Identity / MDI" as T1_MDI
   rectangle "PingCastle" as T1_PC
   rectangle "Azure Bastion" as T1_BAST
@@ -157,21 +160,23 @@ package "Tier 1 – Administration & Sécurité" #E3F2FD {
 package "Tier 2 – Utilisateurs & Services" #E8F5E9 {
   rectangle "Postes utilisateurs (Intune/M365)" as T2_CLIENTS
   rectangle "EDR (Falcon)" as T2_EDR
-  rectangle "Apps SaaS" as T2_SAAS
-  rectangle "Groupes dynamiques Entra" as T2_GROUPS
+  rectangle "Apps SaaS / Groupes dynamiques" as T2_SAAS
   rectangle "Processus métier & HR -> IIQ" as T2_HR
   rectangle "Accès standards (MFA / CA)" as T2_STD
 }
 
-T1_IIQ -down-> T1_PVWA : Demande JIT (API)
-T1_PVWA -down-> T0_CYB : Requête d'accès privilégié
-T0_CYB -down-> T0_PSMJ : Session PSM
+' Flows
+T1_IIQ -down-> T1_ORCH : Demande JIT (workflow)
+T1_ORCH -down-> T0_PVWA : Appel API (broker non‑T0)
+T0_PVWA -down-> T0_CYB : Action privilégiée
+T0_PVWA -left-> VAULT : Secret request / Session token
+T0_CYB -down-> T0_ADDS : Opérations comptes AD
 T0_SYNC -down-> T0_ENTRA : Sync identité
 T2_HR -up-> T1_IIQ : Création identité
-T1_ORCH -down-> T1_PVWA : Orchestration non‑T0
-T1_SIEM -left-> T0_CYB : Logs PSM/Vault (lecture)
+T1_SIEM -left-> T0_CYB : Logs (lecture)
 T1_SIEM -down-> T2_CLIENTS : Logs endpoint (lecture)
 
 @enduml
+
 
 ```
