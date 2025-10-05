@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "CyberArk PVWA API",
+    "_postman_id": "d2e5f1a2-0000-4d00-8000-111111111111",
+    "description": "Collection d'exemples PVWA (Auth, JIT, PSM, Rotation) \u2014 variables d'environnement requises.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth SAML Logon",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/API/Auth/SAML/Logon",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"SAMLResponse\": \"{{SAML_RESPONSE}}\", \"useRadiusAuthentication\": false}"
+        }
+      }
+    },
+    {
+      "name": "Request JIT (T1/T0)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{PVWA_TOKEN}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/API/Accounts/{{ACCOUNT_ID}}/Requests",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"Reason\": \"Maintenance serveur PRD\", \"Duration\": 60, \"TicketingSystem\": \"ServiceNow\", \"TicketID\": \"{{TICKET_ID}}\", \"PlatformID\": \"WindowsDomain\", \"Safe\": \"{{SAFE_NAME}}\", \"AccessType\": \"PSM\", \"Labels\": [\"{{TIER_LABEL}}\", \"{{PAW_LABEL}}\"], \"Approvals\": [{\"Type\": \"Manager\", \"Value\": \"{{APP_MANAGER}}\"}, {\"Type\": \"Security\", \"Value\": \"{{APP_SECURITY}}\"}]}"
+        }
+      }
+    },
+    {
+      "name": "PSM Connect",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{PVWA_TOKEN}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/WebServices/PIMServices.svc/PSMConnect",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"UserName\": \"{{ADMIN_USER}}\", \"ConnectionComponent\": \"RDP\", \"TargetSystem\": \"{{TARGET_SYSTEM}}\", \"Record\": true}"
+        }
+      }
+    },
+    {
+      "name": "Check-In",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{PVWA_TOKEN}}"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/API/Accounts/{{ACCOUNT_ID}}/CheckIn"
+      }
+    },
+    {
+      "name": "Change (Rotate)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{PVWA_TOKEN}}"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/API/Accounts/{{ACCOUNT_ID}}/Change"
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "PVWA_BASE_URL",
+      "value": "https://pvwa.contoso.local"
+    },
+    {
+      "key": "PVWA_TOKEN",
+      "value": "{{set_after_auth}}"
+    },
+    {
+      "key": "ACCOUNT_ID",
+      "value": "1234"
+    },
+    {
+      "key": "SAFE_NAME",
+      "value": "T0-PrivilegedAccounts"
+    },
+    {
+      "key": "TIER_LABEL",
+      "value": "T0"
+    },
+    {
+      "key": "PAW_LABEL",
+      "value": "PAW-T0"
+    },
+    {
+      "key": "APP_MANAGER",
+      "value": "manager.username"
+    },
+    {
+      "key": "APP_SECURITY",
+      "value": "grc.reviewer"
+    },
+    {
+      "key": "TICKET_ID",
+      "value": "INC123456"
+    },
+    {
+      "key": "SAML_RESPONSE",
+      "value": "<base64-saml>"
+    },
+    {
+      "key": "ADMIN_USER",
+      "value": "a-admin-t0"
+    },
+    {
+      "key": "TARGET_SYSTEM",
+      "value": "srv-core-prd"
+    }
+  ]
+}

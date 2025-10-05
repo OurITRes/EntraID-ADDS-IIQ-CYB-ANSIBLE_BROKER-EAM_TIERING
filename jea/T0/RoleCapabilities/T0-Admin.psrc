@@ -1,0 +1,17 @@
+@{
+    GUID = '22222222-2222-4222-8222-222222222222'
+    Author = 'OurITRes'
+    CompanyName = 'OurITRes'
+    Description = 'RoleCapabilities T0-Admin – opérations critiques minimales (lecture/santé DC).'
+    VisibleCmdlets = @(
+        @{ Name = 'Get-ADDomainController' },
+        @{ Name = 'Get-ADReplicationFailure' },
+        @{ Name = 'Get-ADForest' },
+        @{ Name = 'Get-Service' },
+        @{ Name = 'Get-EventLog' }
+    )
+    VisibleFunctions = @()
+    VisibleExternalCommands = @()
+    ScriptsToProcess = @()
+    ModulesToImport = @('ActiveDirectory')
+}

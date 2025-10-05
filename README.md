@@ -117,3 +117,7 @@ Ce projet incarne la **fusion entre technique, gouvernance et conformité**.
 Il démontre qu’une architecture d’identité bien conçue peut être à la fois **sécurisée, automatisée et économiquement efficiente**, tout en restant alignée sur les cadres normatifs internationaux.
 
 > “La confiance se construit dans la transparence, se mesure dans la traçabilité et se maintient dans l’amélioration continue.”
+
+
+### 🧩 Référence Tiering
+- [TIERING_MATRIX.md](./docs/TIERING_MATRIX.md) — Classification EAM (T0/T1/T2) et diagrammes.

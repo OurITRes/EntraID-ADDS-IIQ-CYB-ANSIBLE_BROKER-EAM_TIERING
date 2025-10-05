@@ -1,0 +1,9 @@
+@{
+    SchemaVersion = '2.0.0.0'
+    SessionType = 'RestrictedRemoteServer'
+    TranscriptDirectory = 'C:\JEA\Transcripts\T1-Admin'
+    RunAsVirtualAccount = $true
+    RoleDefinitions = @{
+        'OUR\T1-Admins' = @{ RoleCapabilities = 'T1-Admin' }
+    }
+}
