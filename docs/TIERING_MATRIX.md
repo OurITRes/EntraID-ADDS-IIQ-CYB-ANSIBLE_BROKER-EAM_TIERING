@@ -81,7 +81,7 @@ Les composants **PVWA/CPM/PSM (T0)** interagissent avec la Vault via des **flux 
                                         |  Tier 2   |
                                         |  Users    |
                                         +-----------+
-
+```
 ---
 
 ## 4️⃣ Bonnes pratiques de franchissement de tiers
