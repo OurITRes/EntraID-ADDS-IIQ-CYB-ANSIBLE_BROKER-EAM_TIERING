@@ -88,3 +88,43 @@ Le workflow suivant rend les `.puml` en **PNG** à chaque `push` :
 ---
 
 © 2025 — Architecture de référence Entra ID × IIQ × AD DS (EAM T2/T1/T0).
+
+
+---
+
+## 🆕 Version 2 — Ajouts majeurs (séparés par T2 / T1 / T0 / standard)
+
+### ✅ JEA (Just Enough Administration)
+- `jea/T1/RoleCapabilities/JEA.AD.T1.psrc` & `jea/T1/SessionConfigurations/JEA.AD.T1.pssc`
+- `jea/T0/RoleCapabilities/JEA.AD.T0.psrc` & `jea/T0/SessionConfigurations/JEA.AD.T0.pssc`  
+> **À faire côté bastion** : copier les `.psrc` dans `C:\ProgramData\JEA\RoleCapabilities\`, les `.pssc` où souhaité, puis :
+```powershell
+Register-PSSessionConfiguration -Name JEA-AD-T1 -Path C:\Path\To\JEA.AD.T1.pssc -Force
+Register-PSSessionConfiguration -Name JEA-AD-T0 -Path C:\Path\To\JEA.AD.T0.pssc -Force
+```
+Les transcripts sont dans `C:\JEA\Transcripts\T1|T0` (à expédier vers SIEM).
+
+### ✅ Ansible — Playbooks par **tier**
+- `playbooks/t2_standard/provision_t2.yml`
+- `playbooks/t1_admin/grant_t1_jit.yml`
+- `playbooks/t0_admin/grant_t0_jit.yml`
+
+### ✅ Inventaires
+- `inventory/t2.ini`, `inventory/t1.ini`, `inventory/t0.ini`
+
+### ✅ Scripts PowerShell
+- `scripts/ps/Invoke-ADUserProvision.ps1` (T2 provisioning helper)
+- `scripts/ps/JEA-T1-AdminTasks.ps1` (exemple de commande sous JEA-T1)
+- `scripts/ps/JEA-T0-AdminTasks.ps1` (exemple de commande sous JEA-T0)
+
+### ✅ Docs
+- `docs/CyberArk-PVWA-API.md` (endpoints clés & conseils)
+
+---
+
+## 🚦 Bonnes pratiques d’usage
+- **Ne pas** élargir les cmdlets visibles dans les `.psrc` sans revue Sécu.
+- Toujours exécuter **T0** via **PSM + JEA-T0**, **double approbation** côté PVWA.
+- Les playbooks T1/T0 contiennent des **placeholders** pour l’API PVWA : branchez vos appels `uri`/SDK selon votre config.
+- Entra Connect reste scoppé : **1 forêt autoritaire** pour l’objet cloud licencié (T2 uniquement).
+

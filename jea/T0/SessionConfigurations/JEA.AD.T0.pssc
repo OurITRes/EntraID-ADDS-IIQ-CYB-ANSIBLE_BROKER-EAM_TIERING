@@ -1,0 +1,14 @@
+@{
+    SchemaVersion = '2.0.0.0'
+    Author = 'SecurityTeam'
+    SessionType = 'RestrictedRemoteServer'
+    TranscriptDirectory = 'C:\JEA\Transcripts\T0'
+    RunAsVirtualAccount = $true
+    RoleDefinitions = @{
+        'PHIL\GRP-JEA-T0-Operators' = @{
+            'RoleCapabilityFiles' = @('C:\ProgramData\JEA\RoleCapabilities\JEA.AD.T0.psrc')
+        }
+    }
+    ModulesToImport = @('ActiveDirectory')
+    LanguageMode = 'ConstrainedLanguage'
+}

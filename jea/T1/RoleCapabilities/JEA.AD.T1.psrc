@@ -1,0 +1,19 @@
+@{
+    GUID = '2f9b1c2d-0b2a-4bde-9c33-111111111111'
+    Author = 'SecurityTeam'
+    CompanyName = 'phil.ca'
+    Copyright = '(c) phil.ca'
+    ModulesToImport = @('ActiveDirectory')
+    VisibleCmdlets = @(
+        @{ Name = 'Get-ADUser'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Set-ADAccountPassword'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Unlock-ADAccount'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Enable-ADAccount'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Disable-ADAccount'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Add-ADGroupMember'; Parameters = @{ Name = 'Identity' }, @{ Name = 'Members' } },
+        @{ Name = 'Remove-ADGroupMember'; Parameters = @{ Name = 'Identity' }, @{ Name = 'Members' } }
+    )
+    VisibleFunctions = @()
+    VisibleAliases = @()
+    Description = 'JEA AD T1 – ops serveurs & applis, sans privilèges T0.'
+}

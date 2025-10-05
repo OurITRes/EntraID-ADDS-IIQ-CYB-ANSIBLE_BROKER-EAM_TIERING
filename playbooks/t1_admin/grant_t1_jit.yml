@@ -1,0 +1,30 @@
+---
+- name: T1 Admin | Grant JIT access via PVWA/PSM + JEA-T1 (no standing access)
+  hosts: mgmt_t1
+  gather_facts: no
+  vars:
+    admin_sam: "a-{{ lookup('env','USER_ID') | default('jdoe', true) }}"
+    jea_endpoint: "JEA-AD-T1"
+    target_groups:
+      - "GRP-T1-Operators-AppX"
+    jit_duration_minutes: 120
+  tasks:
+    - name: Ensure admin account exists (no permanent groups)
+      ansible.windows.win_shell: |
+        if (-not (Get-ADUser -Filter "sAMAccountName -eq '{{ admin_sam }}'")) {{
+          New-ADUser -Name '{{ admin_sam }}' -SamAccountName '{{ admin_sam }}' -Path 'OU=AdminAccounts,OU=Tier1,DC=coread,DC=prd,DC=int,DC=phil,DC=ca' -Enabled $true
+        }}
+
+    - name: Request JIT policy in PVWA (placeholder)
+      ansible.builtin.debug:
+        msg: "Call PVWA REST API to request JIT for {{ admin_sam }} for {{ jit_duration_minutes }} minutes (approval required)."
+
+    - name: Start constrained task through JEA (example cmdlet)
+      ansible.windows.win_powershell:
+        script: |
+          Enter-PSSession -ConfigurationName {{ jea_endpoint }}
+          # EXAMPLE: Add temporary group if policy allows (or rely purely on JEA scope)
+          # Add-ADGroupMember -Identity "{{ item }}" -Members "{{ admin_sam }}"
+          # Example constrained command
+          Get-ADUser -Identity "{{ admin_sam }}"
+      loop: "{{ target_groups }}"

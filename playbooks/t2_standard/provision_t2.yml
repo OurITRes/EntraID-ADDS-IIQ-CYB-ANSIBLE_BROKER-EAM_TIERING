@@ -1,0 +1,34 @@
+---
+- name: T2 Standard | Provision AD users with delegated OU rights (no DA)
+  hosts: ad_prd
+  gather_facts: no
+  vars:
+    user_id: "{{ lookup('env','USER_ID') | default('john.doe', true) }}"
+    display_name: "John Doe"
+    ou_path: "OU=T2,OU=Users,DC=coread,DC=prd,DC=int,DC=phil,DC=ca"
+    upn_suffix: "coread.prd.int.phil.ca"
+    base_groups:
+      - "GRP-T2-Base-Users"
+    extension_attributes:
+      ext15: "T2-Standard"
+  tasks:
+    - name: Create user in PRD
+      community.windows.win_domain_user:
+        name: "{{ user_id }}"
+        upn: "{{ user_id }}@{{ upn_suffix }}"
+        firstname: "{{ display_name.split(' ')[0] }}"
+        surname: "{{ display_name.split(' ')[1] | default('') }}"
+        password: "TemP@ssw0rd!ChangeMe"
+        path: "{{ ou_path }}"
+        state: present
+        password_never_expires: no
+        user_cannot_change_password: no
+
+    - name: Add base groups
+      ansible.windows.win_shell: |
+        Add-ADGroupMember -Identity "{{ item }}" -Members "{{ user_id }}"
+      loop: "{{ base_groups }}"
+
+    - name: Set extension attributes (example)
+      ansible.windows.win_shell: |
+        Set-ADUser -Identity "{{ user_id }}" -Add @{{'{'}}extensionAttribute15='{{ extension_attributes.ext15 }}'{{'}'}}

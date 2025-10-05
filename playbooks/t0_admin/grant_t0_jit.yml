@@ -1,0 +1,24 @@
+---
+- name: T0 Admin | Grant JIT access via PVWA/PSM + JEA-T0 (double approval, minimal commands)
+  hosts: mgmt_t0
+  gather_facts: no
+  vars:
+    admin_sam: "a-{{ lookup('env','USER_ID') | default('jdoe0', true) }}"
+    jea_endpoint: "JEA-AD-T0"
+    jit_duration_minutes: 60
+  tasks:
+    - name: Ensure admin account exists (no permanent groups)
+      ansible.windows.win_shell: |
+        if (-not (Get-ADUser -Filter "sAMAccountName -eq '{{ admin_sam }}'")) {{
+          New-ADUser -Name '{{ admin_sam }}' -SamAccountName '{{ admin_sam }}' -Path 'OU=AdminAccounts,OU=Tier0,DC=coread,DC=prd,DC=int,DC=phil,DC=ca' -Enabled $true
+        }}
+
+    - name: Request T0 JIT policy in PVWA (double approval) - placeholder
+      ansible.builtin.debug:
+        msg: "Call PVWA REST API with double approval for {{ admin_sam }} for {{ jit_duration_minutes }} minutes."
+
+    - name: Start constrained task through JEA (minimal commands)
+      ansible.windows.win_powershell:
+        script: |
+          Enter-PSSession -ConfigurationName {{ jea_endpoint }}
+          Get-ADDomain

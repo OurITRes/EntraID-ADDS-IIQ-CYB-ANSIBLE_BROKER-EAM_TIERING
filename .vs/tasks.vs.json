@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "task-tier0_admin_access",
+      "appliesTo": "diagrams/tier0_admin_access.puml",
+      "type": "launch"
+    }
+  ]
+}

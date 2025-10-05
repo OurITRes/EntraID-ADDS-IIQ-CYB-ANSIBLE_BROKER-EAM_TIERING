@@ -1,0 +1,10 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.github",
+    "\\.github\\workflows",
+    "\\diagrams"
+  ],
+  "SelectedNode": "\\.github\\workflows\\render-plantuml.yml",
+  "PreviewInSolutionExplorer": true
+}

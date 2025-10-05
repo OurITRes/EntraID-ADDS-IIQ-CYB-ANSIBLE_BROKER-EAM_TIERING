@@ -1,0 +1,16 @@
+@{
+    GUID = '0b7a77b6-1a3a-4b4b-8f77-222222222222'
+    Author = 'SecurityTeam'
+    CompanyName = 'phil.ca'
+    ModulesToImport = @('ActiveDirectory')
+    VisibleCmdlets = @(
+        @{ Name = 'Get-ADDomain'; Parameters = @() },
+        @{ Name = 'Get-ADForest'; Parameters = @() },
+        @{ Name = 'Get-ADUser'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Set-ADUser'; Parameters = @{ Name = 'Identity' } },
+        @{ Name = 'Set-ADAccountControl'; Parameters = @{ Name = 'Identity' } }
+    )
+    VisibleFunctions = @()
+    VisibleAliases = @()
+    Description = 'JEA AD T0 – jeu minimal, pas de cmdlets à large portée.'
+}

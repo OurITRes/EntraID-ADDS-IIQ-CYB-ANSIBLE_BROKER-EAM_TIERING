@@ -2,7 +2,7 @@ name: Render PlantUML
 on:
   push:
     paths:
-      - 'diagrams/*.puml'
+      - 'diagrams/**/*.puml'
       - '.github/workflows/render-plantuml.yml'
   workflow_dispatch:
 
@@ -10,5 +10,13 @@ jobs:
   render:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Render diagrams to PNG
+        uses: TimonVS/plantuml-action@v1
+        with:
+          args: -tpng diagrams/*.puml
+      - name: Upload rendered images as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rendered-diagrams
+          path: diagrams/*.png
