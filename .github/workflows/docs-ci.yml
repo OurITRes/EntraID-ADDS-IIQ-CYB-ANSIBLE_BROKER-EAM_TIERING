@@ -25,11 +25,6 @@ jobs:
         run: |
           find . -name "*.md" -not -path "./node_modules/*" -print0 | xargs -0 -n1 -I{} bash -c 'echo "Checking {}" && markdown-link-check -q "{}"'
 
-      - name: PlantUML export (PNG)
-        uses: cloudbees/plantuml-github-action@v1.0.11
-        with:
-          args: -tpng -o docs/images docs/diagrams/*.puml
-
       - name: Validate JSON (Postman collections & reports)
         run: |
           sudo apt-get update && sudo apt-get install -y jq
