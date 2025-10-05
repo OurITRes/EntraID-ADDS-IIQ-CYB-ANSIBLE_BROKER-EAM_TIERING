@@ -112,7 +112,7 @@ Les composants **PVWA/CPM/PSM (T0)** interagissent avec la Vault via des **flux 
 ## 6️⃣ Diagrammes
 
 ### 6.1 Vue PNG (prête à l'emploi)
-![Tiering Matrix](../diagrams/tiering_matrix.png)
+![Tiering Matrix](/images/tiering_matrix.png)
 
 ### 6.2 Source PlantUML
 Le diagramme PlantUML peut être compilé avec n'importe quel moteur PlantUML local ou en CI :
