@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Render diagrams to PNG
-        uses: plantuml/plantuml-action@v1
+        uses: weirongxu/plantuml-action@v1
         with:
           args: -tpng diagrams/*.puml
       - name: Upload rendered images as artifact
