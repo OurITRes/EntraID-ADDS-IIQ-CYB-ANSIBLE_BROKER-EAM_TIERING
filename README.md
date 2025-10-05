@@ -4,7 +4,100 @@ Ce dépôt fournit **3 diagrammes de séquence PlantUML** + **1 diagramme JEA** 
 - **IIQ** (Tier‑1) orchestre le **provisioning T2** (users licenciés Entra ID), et **les accès JIT** pour **T1** et **T0** via **CyberArk (PVWA/PSM)** + **JEA** ;
 - Les **comptes admin** n’ont **aucun standing access** ni licence ;
 - **PAW T1/T0**, **PIM/CA**, **JEA**, **délégations OU**, **scoping Entra Connect** assurent la séparation **EAM (T2/T1/T0)**.
+#  Nouveautés de la v0.1.4-beta (par rapport à v0.1.3-beta)
 
+## Version 0.1.4-beta
+- **Defender for Cloud Apps** : contrôles de session pour portails admin → `policies/defender-for-cloud-apps/`
+- **Terraform** : dynamic groups + Conditional Access → `terraform/`
+- **Ansible PVWA API** : playbook `grant_t1_jit_pvwa_api.yml` (appel réel via `uri`) → `playbooks/t1_admin/`
+- **Runbook Break-glass T0** → `runbooks/RUNBOOK_BREAKGLASS_T0.md`
+- **Grafana KPIs** → `observability/grafana/dashboard_kpis.json`
+
+## 🧩 Defender for Cloud Apps (Session Control)
+
+**Fichier :**
+`policies/defender-for-cloud-apps/MDA-Admin-Portals-Restrict-Downloads.json`
+
+**Description :**
+- Restreint les **téléchargements** sur les portails administratifs (Azure, Entra, M365).  
+- Implique le **monitoring** et le **watermarking** des sessions sensibles.  
+- Ciblage précis via **groupe dynamique** des administrateurs.  
+- Objectif : éviter toute fuite de données depuis les consoles d’administration.
+
+## 🧱 Terraform (Infrastructure as Code – exemples)
+
+**Répertoire :** `terraform/`
+
+### Contenu :
+
+- **`providers.tf`**  
+  Déclare les providers :
+  - `azuread`
+  - `microsoft365`
+
+- **`dynamic_groups.tf`**  
+  Définit un **groupe dynamique T1/PRD** basé sur les attributs :
+  - `extensionAttribute10`
+  - `extensionAttribute11`
+
+- **`conditional_access.tf`**  
+  Exemple de politique de **Conditional Access** :
+  - “PIM activation PAW-only”  
+  - Restreint les activations PIM aux **Postes d’Administration Sécurisés (PAW)** uniquement.
+
+- **`outputs.tf`**  
+  Exporte les **IDs utiles** (groupes, policies, objets).
+
+💡 *Ces fichiers sont à adapter selon la configuration des providers de Conditional Access (les capacités évoluent rapidement).*
+
+
+## ⚙️ Ansible (API PVWA – intégration réelle)
+
+**Fichier :**
+`playbooks/t1_admin/grant_t1_jit_pvwa_api.yml`
+
+**Fonction :**
+- Effectue un **appel HTTP** (module `uri`) vers :
+/PasswordVault/API/Accounts/<id>/Requests
+
+markdown
+Copy code
+- Variables d’environnement :
+- `PVWA_BASE_URL`
+- `PVWA_TOKEN`
+- Permet une **demande d’accès JIT (Just-In-Time)** via API pour les comptes T1, intégrée au modèle de rôles CyberArk.
+
+
+## 🚨 Runbook Incident (Break-Glass T0)
+
+**Fichier :**
+`runbooks/RUNBOOK_BREAKGLASS_T0.md`
+
+**Objectif :**
+- Procédure **critique P1** pour gestion d’incident majeur sur Tier 0.  
+- Étapes clés :
+1. Accès via **HSM/coffre-fort** sécurisé.  
+2. Signature **2-of-3** (approbation multi-personnes).  
+3. Utilisation d’un **bastion restreint**.  
+4. Création d’un **compte d’urgence temporaire**.  
+5. Journalisation en **WORM** (Write-Once-Read-Many).  
+6. **Post-mortem** obligatoire après résolution.
+
+
+## 📊 Grafana Dashboard (KPIs Sécurité & Gouvernance)
+
+**Fichier :**
+`observability/grafana/dashboard_kpis.json`
+
+**Indicateurs clés :**
+- % d’administrateurs **sans accès permanent (standing access)**  
+- **Temps moyen d’approbation** des demandes PIM/PVWA  
+- Nombre de **sessions PSM** par jour  
+- **Licences évitées** grâce aux accès temporaires et à l’automatisation
+
+🎯 *Objectif : fournir une visibilité consolidée sur la posture Zero Standing Privilege (ZSP) et la gouvernance des accès à privilèges.*
+
+---
 
 ## Version 0.1.3-beta
 
@@ -19,6 +112,8 @@ Ce dépôt fournit **3 diagrammes de séquence PlantUML** + **1 diagramme JEA** 
 - Observabilité — Dashboard Splunk (corrélation e2e) observability/splunk/dashboard_identity_jit.xml.json
   - Panneaux : IIQ Requests, PVWA Sessions, AD Changes via JEA, Entra ID Updates (Graph)
   - Requêtes type stats prêtes à adapter à tes index/sourcetypes
+
+---
 
 ## 🆕 Version 0.1.2-beta
 
@@ -91,6 +186,8 @@ ROOT/
 - **Graph App Reg** : scope minimal (User.ReadWrite.All), secret court, rotation, pas de Global Admin.
 - **CI/CD** : garde les workflows “dry-run” tant que le bastion/JEA/PVWA de prod n’est pas raccordé.
 
+---
+
 ## 🆕 Version 0.1.1-beta — Ajouts majeurs (séparés par T2 / T1 / T0 / standard)
 
 ## 📁 Structure
@@ -161,6 +258,8 @@ Les transcripts sont dans `C:\JEA\Transcripts\T1|T0` (à expédier vers SIEM).
 - Toujours exécuter **T0** via **PSM + JEA-T0**, **double approbation** côté PVWA.
 - Les playbooks T1/T0 contiennent des **placeholders** pour l’API PVWA : branchez vos appels `uri`/SDK selon votre config.
 - Entra Connect reste scoppé : **1 forêt autoritaire** pour l’objet cloud licencié (T2 uniquement).
+
+---
 
 ## 🆕 Version 0.1.0-beta
 

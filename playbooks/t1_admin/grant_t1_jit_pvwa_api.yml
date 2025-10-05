@@ -1,0 +1,27 @@
+
+---
+- name: T1 Admin | PVWA API JIT request (real call placeholder)
+  hosts: pvwa
+  gather_facts: no
+  vars:
+    pvwa_base_url: "{{ lookup('env','PVWA_BASE_URL') | default('https://pvwa.phil.ca', true) }}"
+    account_id: "{{ lookup('env','PVWA_ACCOUNT_ID') | default('123_45', true) }}"
+    duration_minutes: 120
+    reason: "Admin task via CI"
+  tasks:
+    - name: Request JIT via PVWA API
+      uri:
+        url: "{{ pvwa_base_url }}/PasswordVault/API/Accounts/{{ account_id }}/Requests"
+        method: POST
+        headers:
+          Content-Type: "application/json"
+          Authorization: "Bearer {{ lookup('env','PVWA_TOKEN') }}"
+        body_format: json
+        body:
+          durationMinutes: "{{ duration_minutes }}"
+          reason: "{{ reason }}"
+          labels: ["T1"]
+        validate_certs: yes
+      register: pvwa_jit
+    - debug:
+        var: pvwa_jit.status

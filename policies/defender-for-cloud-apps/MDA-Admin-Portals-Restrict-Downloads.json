@@ -1,0 +1,20 @@
+{
+  "name": "MDA-Admin-Portals-Restrict-Downloads",
+  "description": "Applique des contr\u00f4les de session sur les portails admin (AAD Portal, Exchange, Entra, Security) \u2014 bloque downloads et impose investigation mode.",
+  "filters": {
+    "ipCategory": "Corporate",
+    "deviceTag": "PAW",
+    "userGroup": "GRP-DYN-ADM-ANY"
+  },
+  "sessionControls": {
+    "monitorOnly": false,
+    "blockDownload": true,
+    "protectUpload": true,
+    "watermark": true
+  },
+  "apps": [
+    "Microsoft Azure Management",
+    "Microsoft 365 admin center",
+    "Microsoft Entra admin center"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "dashboard": {
+    "title": "Identity EAM \u2014 KPIs",
+    "panels": [
+      {
+        "type": "stat",
+        "title": "% Admins sans standing access",
+        "targets": [
+          {
+            "expr": "100 - (admins_with_standing_access/total_admins*100)"
+          }
+        ]
+      },
+      {
+        "type": "stat",
+        "title": "Temps m\u00e9dian d'\u00e9l\u00e9vation approuv\u00e9e (min)",
+        "targets": [
+          {
+            "expr": "median(approval_duration_minutes)"
+          }
+        ]
+      },
+      {
+        "type": "graph",
+        "title": "Sessions PSM / jour",
+        "targets": [
+          {
+            "expr": "sum(rate(psm_sessions_total[1d]))"
+          }
+        ]
+      },
+      {
+        "type": "table",
+        "title": "Licences \u00e9vit\u00e9es (DEV/TST/Admin)",
+        "targets": [
+          {
+            "expr": "avoided_licenses_daily"
+          }
+        ]
+      }
+    ],
+    "time": {
+      "from": "now-7d",
+      "to": "now"
+    }
+  },
+  "overwrite": true
+}
