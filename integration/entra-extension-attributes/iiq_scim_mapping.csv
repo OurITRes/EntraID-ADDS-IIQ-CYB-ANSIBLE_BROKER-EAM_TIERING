@@ -1,0 +1,7 @@
+# IIQ to Entra ID mapping for extensionAttributes
+# sourceAttribute,destinationAttribute,transform,notes
+tier,extensionAttribute10,UPPER(),T0/T1/T2
+environment,extensionAttribute11,UPPER(),PRD/DEV/TST/SBX
+accountType,extensionAttribute12,Passthrough,Standard/Admin/Service
+employeeNumber,employeeId,Passthrough,HR source of truth
+costCenter,extensionAttribute13,PadLeft(6,'0'),Normalized cost center

@@ -1,0 +1,15 @@
+{
+  "displayName": "identity-orchestrator-graph",
+  "signInAudience": "AzureADMyOrg",
+  "requiredResourceAccess": [
+    {
+      "resourceAppId": "00000003-0000-0000-c000-000000000000",
+      "resourceAccess": [
+        {
+          "id": "741f803b-c850-494e-b5df-cde7c675a1ca",
+          "type": "Role"
+        }
+      ]
+    }
+  ]
+}

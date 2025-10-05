@@ -1,0 +1,34 @@
+name: Update Entra ID Extension Attributes
+on:
+  workflow_dispatch:
+    inputs:
+      user_upn:
+        description: "User principal name (e.g. john.doe@phil.ca)"
+        required: true
+      tier:
+        description: "Tier (T0/T1/T2)"
+        required: true
+      env:
+        description: "Environment (PRD/DEV/TST/SBX)"
+        required: true
+      type:
+        description: "Account type (Standard/Admin/Service)"
+        required: true
+        default: "Standard"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Az CLI login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.GRAPH_APP_ID }}
+          tenant-id: ${{ secrets.GRAPH_TENANT_ID }}
+          allow-no-subscriptions: true
+      - name: Patch user via Graph
+        run: |
+          az rest             --method PATCH             --uri "https://graph.microsoft.com/v1.0/users/${{ github.event.inputs.user_upn }}"             --headers "Content-Type=application/json"             --body "{               \"extensionAttribute10\": \"${{ github.event.inputs.tier }}\",               \"extensionAttribute11\": \"${{ github.event.inputs.env }}\",               \"extensionAttribute12\": \"${{ github.event.inputs.type }}\"             }"

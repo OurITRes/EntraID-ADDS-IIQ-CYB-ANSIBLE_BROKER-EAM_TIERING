@@ -1,0 +1,59 @@
+{
+  "info": {
+    "name": "PVWA JIT & PSM",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login (SSO placeholder)",
+      "request": {
+        "method": "GET",
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/"
+      }
+    },
+    {
+      "name": "Request JIT",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/API/Accounts/{{ACCOUNT_ID}}/Requests",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"durationMinutes\": 60, \"reason\": \"Admin task\", \"labels\": [\"T1\"]}"
+        }
+      }
+    },
+    {
+      "name": "PSM Connect",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{PVWA_BASE_URL}}/PasswordVault/WebServices/PIMServices.svc/PSMConnect",
+        "body": {
+          "mode": "raw",
+          "raw": "{\"target\": \"MGMT_T1\", \"record\": true}"
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "PVWA_BASE_URL",
+      "value": "https://pvwa.phil.ca"
+    },
+    {
+      "key": "ACCOUNT_ID",
+      "value": "123_45"
+    }
+  ]
+}

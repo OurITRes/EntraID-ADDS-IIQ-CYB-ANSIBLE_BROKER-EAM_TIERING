@@ -1,0 +1,20 @@
+{
+  "userName": "john.doe@phil.ca",
+  "displayName": "John Doe",
+  "active": true,
+  "externalId": "HR123456",
+  "schemas": [
+    "urn:ietf:params:scim:schemas:core:2.0:User",
+    "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+  ],
+  "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User": {
+    "employeeNumber": "123456",
+    "department": "Finance",
+    "costCenter": "FIN001"
+  },
+  "extensions": {
+    "extensionAttribute10": "T2",
+    "extensionAttribute11": "PRD",
+    "extensionAttribute12": "Standard"
+  }
+}
