@@ -1,0 +1,44 @@
+@startuml
+title Deployment Diagram – PAM & IGA (EAM aligned)
+
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+
+node "PAW-T0 Zone" #F3E5F5 {
+  node "PSM Jump" as PSMJ
+  node "PSM" as PSM
+}
+
+node "T0 Control Plane" #F3E5F5 {
+  node "PVWA (IIS)" as PVWA
+  node "CPM" as CPM
+  node "ADDS (DCs)" as DC
+  node "Entra Connect" as CNX
+}
+
+node "Vault Enclave (Hors EAM)" #FFF3E0 {
+  node "Digital Vault" as VAULT
+  node "DR Vault" as DRV
+}
+
+node "T1 Orchestration" #E3F2FD {
+  node "IIQ (Tomcat)" as IIQ
+  node "Ansible/GitHub Runners" as BRK
+  node "SIEM (RO)" as SIEM
+}
+
+node "T2 Users & HR" #E8F5E9 {
+  node "HR Feed" as HR
+  node "Workstations (PAW-T2)" as WS
+}
+
+BRK --> PVWA : HTTPS 443
+PVWA --> VAULT : 1858/1859
+CPM --> VAULT : 1858/1859
+PSM --> VAULT : 1858/1859
+PSM --> DC : RDP/SSH proxied
+IIQ --> BRK : HTTPS 443
+HR --> IIQ : HTTPS 443
+PVWA --> SIEM : Logs (RO)
+
+@enduml

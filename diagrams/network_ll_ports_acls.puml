@@ -1,0 +1,61 @@
+@startuml
+title Network Low-Level (Ports & ACL by Tier)
+
+skinparam packageStyle rect
+skinparam shadowing false
+skinparam defaultFontName DejaVu Sans
+
+package "Hors EAM – Vault Enclave" #FFF3E0 {
+  node "CyberArk Digital Vault" as VAULT
+  node "DR Vault (one-way)" as DRV
+  VAULT -down-> DRV : Replication (encrypted)
+}
+
+package "T0 Segment" #F3E5F5 {
+  node "PVWA" as PVWA
+  node "CPM" as CPM
+  node "PSM / PSM Jump" as PSM
+  node "ADDS (DCs)" as AD
+  node "Entra Connect" as CNX
+}
+
+package "T1 Segment" #E3F2FD {
+  node "SailPoint IIQ" as IIQ
+  node "Broker (Ansible/GitHub)" as BRK
+  node "SIEM (RO)" as SIEM
+}
+
+package "T2 Segment" #E8F5E9 {
+  node "Users / HR" as HR
+  node "Workstations (PAW-T2)" as PAW2
+}
+
+' --- ACL/Ports ---
+PVWA -[hidden]-> VAULT
+PVWA -down-> VAULT : TCP 1858/1859 (allow list)
+CPM -down-> VAULT : TCP 1858/1859 (allow list)
+PSM -down-> VAULT : TCP 1858/1859 (allow list)
+
+BRK -down-> PVWA : TCP 443 (mTLS/HSTS)
+IIQ -down-> BRK : TCP 443 (CI Runner)
+PSM -down-> AD : TCP 3389/22 (proxied only)
+
+SIEM -left-> PVWA : TCP 443 (pull API RO) 
+SIEM -down-> PSM : TCP 443 (logs export RO)
+SIEM -down-> CPM : TCP 443 (logs export RO)
+
+HR -down-> IIQ : TCP 443 (HR feed)
+
+note right of PVWA
+  FW Rules:
+  - allow BRK -> PVWA 443
+  - deny all else from T1 to T0
+end note
+
+note left of VAULT
+  Vault isolated VLAN
+  - only PVWA/CPM/PSM source IPs
+  - no inbound from users
+  - not domain-joined
+end note
+@enduml

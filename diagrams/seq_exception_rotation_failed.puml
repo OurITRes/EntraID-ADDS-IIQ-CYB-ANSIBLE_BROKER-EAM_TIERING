@@ -1,0 +1,15 @@
+@startuml
+title Exception Sequence – Rotation Failure (CPM/Policy)
+
+participant PVWA as PVWA
+participant CPM as CPM
+participant AD as ADDS
+participant SIEM as SIEM
+
+PVWA -> CPM : Change password (policy)
+CPM -> AD : Rotate secret
+AD --> CPM : Error (policy / connectivity)
+CPM -> PVWA : Fail status (retry queued)
+PVWA -> SIEM : Emit alert (High severity)
+PVWA -> PVWA : Disable standing access (if policy)
+@enduml

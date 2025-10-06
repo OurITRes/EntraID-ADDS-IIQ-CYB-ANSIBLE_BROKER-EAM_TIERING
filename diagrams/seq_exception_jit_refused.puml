@@ -1,0 +1,16 @@
+@startuml
+title Exception Sequence – JIT Refused (SoD/MFA/Approval)
+
+participant Admin as Admin
+participant IIQ as IIQ
+participant BRK as Broker
+participant PVWA as PVWA
+participant Approver as Approver
+
+Admin -> IIQ : Request JIT (role T1/T0)
+IIQ -> Approver : Approval task (SoD + risk score)
+Approver -> IIQ : Reject (policy violation)
+IIQ -> Admin : Deny notification (reason, ticket id)
+IIQ -> BRK : (no trigger) Abort workflow
+PVWA -> IIQ : (no session) No PSM grant
+@enduml
